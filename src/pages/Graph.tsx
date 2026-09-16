@@ -775,10 +775,7 @@ export function GraphPage() {
                       display: "block",
                       width: "100%",
                       height: "100%",
-                      minHeight: 480,
                       background: "var(--panel-bg)",
-                      border: "1px solid var(--border)",
-                      borderRadius: "var(--radius)",
                       cursor: "default",
                     }}
                     role="application"

@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:er": "ER_PORT=3002 ./er-service-bin",
+    "dev:api": "cd backend && node -r ts-node/register src/index.ts",
+    "dev:all": "concurrently --names \"er,api,ui\" --prefix-colors \"cyan,green,magenta\" \"npm run dev:er\" \"npm run dev:api\" \"npm run dev\"",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
@@ -20,6 +23,7 @@
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.2",
+    "concurrently": "^10.0.5",
     "typescript": "^5.9.2",
     "vite": "^7.1.5"
   }

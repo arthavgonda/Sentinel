@@ -16,11 +16,83 @@ export const SHORTCUTS = {
     label: "⌘K",
     description: "Toggle and focus the global search bar.",
   },
+  commandPalette: {
+    id: "commandPalette",
+    combo: "mod+k",
+    label: "⌘K",
+    description: "Open command palette.",
+  },
   addObject: {
     id: "addObject",
     combo: "shift+a",
     label: "Shift+A",
     description: "Open the Add menu at the cursor.",
+  },
+  copySelection: {
+    id: "copySelection",
+    combo: "mod+c",
+    label: "⌘C",
+    description: "Copy the selected entities.",
+  },
+  cutSelection: {
+    id: "cutSelection",
+    combo: "mod+x",
+    label: "⌘X",
+    description: "Cut the selected entities.",
+  },
+  pasteSelection: {
+    id: "pasteSelection",
+    combo: "mod+v",
+    label: "⌘V",
+    description: "Paste entities into the active case.",
+  },
+  undo: {
+    id: "undo",
+    combo: "mod+z",
+    label: "⌘Z",
+    description: "Undo last action.",
+  },
+  redo: {
+    id: "redo",
+    combo: "mod+shift+z",
+    label: "⌘⇧Z",
+    description: "Redo last undone action.",
+  },
+  zoomIn: {
+    id: "zoomIn",
+    combo: "=",
+    label: "+",
+    description: "Zoom in.",
+  },
+  zoomOut: {
+    id: "zoomOut",
+    combo: "-",
+    label: "-",
+    description: "Zoom out.",
+  },
+  zoomFit: {
+    id: "zoomFit",
+    combo: "f",
+    label: "F",
+    description: "Zoom to fit all nodes.",
+  },
+  zoomReset: {
+    id: "zoomReset",
+    combo: "0",
+    label: "0",
+    description: "Reset zoom to 100%.",
+  },
+  autoArrange: {
+    id: "autoArrange",
+    combo: "mod+shift+a",
+    label: "⌘⇧A",
+    description: "Auto-arrange nodes.",
+  },
+  save: {
+    id: "save",
+    combo: "mod+s",
+    label: "⌘S",
+    description: "Save the active case.",
   },
 } as const satisfies Record<string, ShortcutDefinition>;
 

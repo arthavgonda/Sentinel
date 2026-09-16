@@ -102,6 +102,7 @@ export type ErMatch = {
   left: OntologyObject;
   right: OntologyObject;
   reasons: string[];
+  modelVersion?: string | null;
 };
 
 export type EvidenceAsset = {

@@ -41,6 +41,11 @@ export type GraphExplorerState = {
   transform: { x: number; y: number; k: number };
 };
 
+export type GraphClipboard = {
+  objectIds: string[];
+  layout: Record<string, { x: number; y: number }>;
+} | null;
+
 type Store = {
   user: User | null;
   users: User[];
@@ -59,6 +64,8 @@ type Store = {
   setGraphEditorDirty: (dirty: boolean) => void;
   graphExplorer: GraphExplorerState;
   setGraphExplorer: (state: GraphExplorerState) => void;
+  graphClipboard: GraphClipboard;
+  setGraphClipboard: (value: GraphClipboard) => void;
   login: (email: string, password: string) => "ok" | "invalid" | "locked";
   completeMfa: (code: string) => "ok" | "incorrect" | "expired";
   logout: () => void;
@@ -111,6 +118,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   });
   const [graphEditorDirty, setGraphEditorDirty] = useState(false);
+  const [graphClipboard, setGraphClipboard] = useState<GraphClipboard>(null);
   const [graphExplorer, setGraphExplorer] = useState<GraphExplorerState>({
     originId: null,
     hops: 1,
@@ -151,6 +159,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setGraphEditorDirty,
       graphExplorer,
       setGraphExplorer,
+      graphClipboard,
+      setGraphClipboard,
       canSeeAudit: role === "auditor" || role === "admin",
       canSteward: role === "steward" || role === "admin",
       login(email, password) {
@@ -354,7 +364,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setAudit((a) => [{ ...entry, id: `au-${crypto.randomUUID()}` }, ...a]);
       },
     };
-  }, [user, objects, links, cases, notes, notifications, erMatches, sources, audit, history, graphEditorDirty, graphExplorer]);
+  }, [user, objects, links, cases, notes, notifications, erMatches, sources, audit, history, graphEditorDirty, graphExplorer, graphClipboard]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

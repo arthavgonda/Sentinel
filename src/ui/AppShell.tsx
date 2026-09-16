@@ -3,12 +3,14 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-do
 import {
   Activity,
   Bell,
+  BrainCircuit,
   Database,
   Folder,
   Home,
   Network,
   PanelLeftClose,
   PanelLeftOpen,
+  PenLine,
   Plus,
   Search,
   Settings,
@@ -20,10 +22,12 @@ import { ManualEntryModal } from "../features/ManualEntryModal";
 import type { OntologyObject } from "../types";
 import { APP_NAME, AUTH_POLICY } from "../config/application";
 import { SHORTCUTS, useShortcut } from "../features/graph-ide/shortcuts";
+import { useTheme } from "../features/graph-ide/IDEChrome";
 
 const ICON = { size: 16, strokeWidth: 1.5 };
 
 export function AppShell() {
+  useTheme();
   const {
     user,
     logout,
@@ -452,6 +456,18 @@ export function AppShell() {
           icon={<Database {...ICON} />}
           label="Data Sources"
         />
+        <NavItem
+          to="/data-entry"
+          icon={<PenLine {...ICON} />}
+          label="Data Entry"
+        />
+        {canSteward ? (
+          <NavItem
+            to="/model-registry"
+            icon={<BrainCircuit {...ICON} />}
+            label="Model Registry"
+          />
+        ) : null}
         {canSeeAudit ? (
           <NavItem
             to="/audit-log"

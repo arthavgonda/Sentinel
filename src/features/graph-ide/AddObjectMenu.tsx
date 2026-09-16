@@ -6,7 +6,7 @@ import { TypeDot } from "../../ui/primitives";
 
 const CREATABLE_TYPES: ObjectType[] = ["Person", "Organization", "Phone", "Location", "JobListing", "Document"];
 
-const TYPE_ICON: Record<ObjectType, typeof User> = {
+export const TYPE_ICON: Record<ObjectType, typeof User> = {
   Person: User,
   Organization: Building2,
   Phone: Smartphone,

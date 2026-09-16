@@ -26,12 +26,23 @@ export function ErReviewPage() {
       return <article key={match.id} className="er-card" style={{ maxHeight: exiting ? 0 : 740, opacity: exiting ? 0 : 1 }}>
         <div className="er-record-grid"><RecordCard label="Candidate record" obj={match.left} onReview={() => setEvidenceFor(match.left)} /><RecordCard label="Reference record" obj={match.right} onReview={() => setEvidenceFor(match.right)} /></div>
         <div className="er-decision-row">
-          <div className="er-match-summary"><span className={`conf-${confidenceTone(match.confidence)}`}>{match.confidence}% match confidence</span><span className="muted">{match.reasons.length} corroborating signals</span></div>
+          <div className="er-match-summary">
+            <span className={`conf-${confidenceTone(match.confidence)}`}>{match.confidence}% match confidence</span>
+            <span className="muted" style={{ fontSize: 11 }}>
+              {match.modelVersion
+                ? match.modelVersion.includes("baseline")
+                  ? "rule-based score"
+                  : `logistic model ${match.modelVersion}`
+                : "rule-based score"}
+            </span>
+            <span className="muted">{match.reasons.length} corroborating signals</span>
+          </div>
           <label className="er-review-check"><input type="checkbox" checked={complete} onChange={(event) => setReviewed((value) => ({ ...value, [match.id]: event.target.checked }))} /> I reviewed both evidence packages</label>
           <div className="er-actions"><Button disabled={!complete} title={!complete ? "Review both evidence packages before deciding." : undefined} onClick={() => resolve(match.id, true)}>Confirm merge</Button><Button variant="secondary" disabled={!complete} title={!complete ? "Review both evidence packages before deciding." : undefined} onClick={() => resolve(match.id, false)}>Keep separate</Button></div>
         </div>
         <div className="er-signals">{match.reasons.map((reason) => <span key={reason}>✓ {reason}</span>)}</div>
       </article>;
+
     })}
     {evidenceFor ? <EvidencePackage obj={evidenceFor} onClose={() => setEvidenceFor(null)} /> : null}
   </div>;

@@ -22,6 +22,8 @@ import { ErReviewPage } from "./pages/ErReview";
 import { AgenciesPage, DataSourcesLayout, PipelinePage, SourceDetail, SourcesTable } from "./pages/DataSources";
 import { AuditLogPage } from "./pages/Audit";
 import { AccessibilitySettings, DataPrivacySettings, NotificationSettings, PersonalHistorySettings, ProfileSettings, SecuritySettings, SettingsLayout, WorkspaceSettings } from "./pages/Settings";
+import { DataEntryPage } from "./pages/DataEntry";
+import { ModelRegistryPage } from "./pages/ModelRegistry";
 
 function Guard() {
   const { user } = useStore();
@@ -63,6 +65,8 @@ export default function App() {
             <Route path=":id" element={<SourceDetail />} />
           </Route>
           <Route path="/audit-log" element={<AuditLogPage />} />
+          <Route path="/data-entry" element={<DataEntryPage />} />
+          <Route path="/model-registry" element={<ModelRegistryPage />} />
           <Route path="/settings" element={<SettingsLayout />}>
             <Route path="profile" element={<ProfileSettings />} />
             <Route path="security" element={<SecuritySettings />} />
