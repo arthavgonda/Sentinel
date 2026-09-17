@@ -10,37 +10,86 @@ SENTINEL employs a multi-tier microservices architecture engineered for high con
 
 ```mermaid
 flowchart TD
-    subgraph Client ["Client Tier (Browser)"]
-        UI["React 19 SPA (Vite + TypeScript)"]
-        D3Canvas["Interactive D3 Graph IDE\n(Force Simulation + Minimap + Command Palette)"]
-        Workspaces["Case Workspaces, ER Review,\nModel Registry, Data Entry & Audit Log"]
-    end
 
-    subgraph Backend ["Core API Tier (Port 3001)"]
-        NodeAPI["Node.js + Express API Service\n(TypeScript)"]
-        AuthMid["RBAC & MFA Auth Gate\n(JWT Sessions)"]
-        AuditMid["Purpose-Bound Audit Logger\n(Non-repudiable log)"]
-        ERClient["ER Orchestration Client\n(Payload dispatch + Shadow scoring)"]
-    end
+subgraph group_client["Browser SPA"]
+  node_spa_entry["React/Vite app<br/>SPA entry<br/>[main.tsx]"]
+  node_app_routes["Routes and layout<br/>app shell<br/>[App.tsx]"]
+  node_session_store["Session state<br/>client state<br/>[store.tsx]"]
+  node_api_client["Typed API client<br/>HTTP client<br/>[client.ts]"]
+  node_graph_workspace["Graph workspaces<br/>analyst UI<br/>[GraphEditor.tsx]"]
+  node_ide_chrome["Graph IDE chrome<br/>workspace UI<br/>[IDEChrome.tsx]"]
+end
 
-    subgraph DataTier ["Data & State Tier"]
-        SQLite[("SQLite 3 Database\n(node:sqlite DatabaseSync\nWAL mode, foreign keys)")]
-    end
+subgraph group_api["Node API"]
+  node_api_entry["Express API<br/>API runtime<br/>[index.ts]"]
+  node_auth["JWT and role guard<br/>auth boundary<br/>[auth.ts]"]
+  node_audit["Audit middleware<br/>governance boundary<br/>[audit.ts]"]
+  node_graph_routes["Objects and links<br/>domain routes<br/>[objects.ts]"]
+  node_case_routes["Cases and notes<br/>domain routes<br/>[cases.ts]"]
+  node_discovery_routes["Search and sources<br/>domain routes<br/>[search.ts]"]
+  node_er_routes["ER governance<br/>domain routes<br/>[er.ts]"]
+  node_sqlite[("SQLite system of record<br/>database<br/>[sentinel.db]")]
+end
 
-    subgraph Microservices ["Specialized Microservices"]
-        GoER["Go Entity Resolution Microservice (:3002)\n(Parallel worker pool, Jaro-Winkler, Soundex, E.164)"]
-        PyML["Python ML Retraining Engine\n(scikit-learn Logistic Regression, StratifiedShuffleSplit)"]
-    end
+subgraph group_er["Entity Resolution"]
+  node_er_client["ER client<br/>service adapter<br/>[erClient.ts]"]
+  node_go_matcher{{"Go matching service<br/>ER runtime<br/>[main.go]"}}
+  node_scoring["Similarity and scoring<br/>matching engine<br/>[comparator.go]"]
+  node_retraining["ML retraining<br/>Python process<br/>[retrain.py]"]
+end
 
-    UI --> NodeAPI
-    NodeAPI --> AuthMid
-    AuthMid --> AuditMid
-    AuditMid --> SQLite
-    NodeAPI --> SQLite
-    NodeAPI --> ERClient
-    ERClient -- "POST /match (live + shadow weights)" --> GoER
-    NodeAPI -- "spawnSync python3 retrain.py" --> PyML
-    PyML -- "Candidate weights & metrics (P/R/F1)" --> NodeAPI
+node_spa_entry -->|"renders"| node_app_routes
+node_app_routes -->|"uses"| node_session_store
+node_app_routes -->|"calls APIs through"| node_api_client
+node_graph_workspace -->|"composes"| node_ide_chrome
+node_app_routes -->|"hosts"| node_graph_workspace
+node_api_client -->|"authenticated requests"| node_api_entry
+node_api_entry -->|"protects requests"| node_auth
+node_auth -->|"governed requests"| node_audit
+node_api_entry -->|"routes"| node_graph_routes
+node_api_entry -->|"routes"| node_case_routes
+node_api_entry -->|"routes"| node_discovery_routes
+node_api_entry -->|"routes"| node_er_routes
+node_graph_routes -->|"objects, links, provenance"| node_sqlite
+node_case_routes -->|"cases, notes, escalations"| node_sqlite
+node_discovery_routes -->|"searches sources"| node_sqlite
+node_audit -->|"audit events"| node_sqlite
+node_er_routes -->|"matches, decisions, models"| node_sqlite
+node_er_routes -->|"requests scoring"| node_er_client
+node_er_client -->|"live and shadow payloads"| node_go_matcher
+node_go_matcher -->|"parallel comparisons"| node_scoring
+node_er_routes -->|"launches retraining"| node_retraining
+node_retraining -->|"training records and candidate metrics"| node_sqlite
+
+click node_spa_entry "https://github.com/arthavgonda/sentinel/blob/main/src/main.tsx"
+click node_app_routes "https://github.com/arthavgonda/sentinel/blob/main/src/App.tsx"
+click node_session_store "https://github.com/arthavgonda/sentinel/blob/main/src/state/store.tsx"
+click node_api_client "https://github.com/arthavgonda/sentinel/blob/main/src/api/client.ts"
+click node_graph_workspace "https://github.com/arthavgonda/sentinel/blob/main/src/pages/GraphEditor.tsx"
+click node_ide_chrome "https://github.com/arthavgonda/sentinel/blob/main/src/features/graph-ide/IDEChrome.tsx"
+click node_api_entry "https://github.com/arthavgonda/sentinel/blob/main/backend/src/index.ts"
+click node_auth "https://github.com/arthavgonda/sentinel/blob/main/backend/src/middleware/auth.ts"
+click node_audit "https://github.com/arthavgonda/sentinel/blob/main/backend/src/middleware/audit.ts"
+click node_graph_routes "https://github.com/arthavgonda/sentinel/blob/main/backend/src/routes/objects.ts"
+click node_case_routes "https://github.com/arthavgonda/sentinel/blob/main/backend/src/routes/cases.ts"
+click node_discovery_routes "https://github.com/arthavgonda/sentinel/blob/main/backend/src/routes/search.ts"
+click node_er_routes "https://github.com/arthavgonda/sentinel/blob/main/backend/src/routes/er.ts"
+click node_sqlite "https://github.com/arthavgonda/sentinel/blob/main/backend/sentinel.db"
+click node_er_client "https://github.com/arthavgonda/sentinel/blob/main/backend/src/services/erClient.ts"
+click node_go_matcher "https://github.com/arthavgonda/sentinel/blob/main/er-service/main.go"
+click node_scoring "https://github.com/arthavgonda/sentinel/blob/main/er-service/matching/comparator.go"
+click node_retraining "https://github.com/arthavgonda/sentinel/blob/main/backend/src/services/retrain.py"
+
+classDef toneNeutral fill:#f8fafc,stroke:#334155,stroke-width:1.5px,color:#0f172a
+classDef toneBlue fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
+classDef toneAmber fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+classDef toneMint fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+classDef toneRose fill:#ffe4e6,stroke:#e11d48,stroke-width:1.5px,color:#881337
+classDef toneIndigo fill:#e0e7ff,stroke:#4f46e5,stroke-width:1.5px,color:#312e81
+classDef toneTeal fill:#ccfbf1,stroke:#0f766e,stroke-width:1.5px,color:#134e4a
+class node_spa_entry,node_app_routes,node_session_store,node_api_client,node_graph_workspace,node_ide_chrome toneBlue
+class node_api_entry,node_auth,node_audit,node_graph_routes,node_case_routes,node_discovery_routes,node_er_routes,node_sqlite toneAmber
+class node_er_client,node_go_matcher,node_scoring,node_retraining toneMint
 ```
 
 ---
